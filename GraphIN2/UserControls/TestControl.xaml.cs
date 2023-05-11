@@ -13,16 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GraphIN2.MyUserControls
+namespace GraphIN2.UserControls
 {
     /// <summary>
-    /// Interaction logic for GraphControl.xaml
+    /// Interaction logic for TestControl.xaml
     /// </summary>
-    public partial class GraphControl : UserControl
+    public partial class TestControl : UserControl
     {
-        public GraphControl()
+        public TestControl()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

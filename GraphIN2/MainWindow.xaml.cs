@@ -17,9 +17,8 @@ using System.Windows.Shapes;
 namespace GraphIN2
 {
 
-    public partial class MainWindow : UserControl
+    public partial class MainWindow : Window
     {
-        private SerialPort _serialPort;
         
         public MainWindow()
         {
