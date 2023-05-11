@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="GraphIN2.MainWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:vms="clr-namespace:GraphIN2.ViewModels">
+    <UserControl.DataContext>
+        <vms:ViewModel/>
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Margin="6" Command="{Binding AddItemCommand}">Add</Button>
+            <Button Margin="6" Command="{Binding RemoveItemCommand}">Remove</Button>
+            <Button Margin="6" Command="{Binding UpdateItemCommand}">Update</Button>
+            <Button Margin="6" Command="{Binding ReplaceItemCommand}">Replace</Button>
+            <Button Margin="6" Command="{Binding AddSeriesCommand}">Add Series</Button>
+            <Button Margin="6" Command="{Binding RemoveSeriesCommand}">Remove Series</Button>
+            <Button Margin="6" Command="{Binding SeeAllCommand}">SeeAll</Button>
+            <Button Margin="6" Command="{Binding RunCommand}">Run</Button>
+            <Button Margin="6" Command="{Binding StopCommand}">Stop</Button>
+            <Button Margin="6" Command="{Binding SwitchZoomAxisCommand}">SwitchZoomAxis</Button>
+            <Button Margin="6" Click="Button_Click">Constant changes</Button>
+            <ComboBox x:Name="comPortComboBox" ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPort}" Width="120"/>
+
+
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0"/>
+                <ColumnDefinition Width="0"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Row="0" >
+                <lvc:CartesianChart 
+                ZoomMode="{Binding ZoomMode}" 
+                TooltipPosition="Hidden" 
+                Series="{Binding Series}"
+                XAxes="{Binding XAxes}"
+                YAxes="{Binding YAxes}">
+                </lvc:CartesianChart>
+            </ScrollViewer>
+        </Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="325,-86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="81" Width="235">
+            <TextBlock.DataContext>
+                <vms:ViewModel/>
+            </TextBlock.DataContext>
+        </TextBlock>
+    </Grid>
+</UserControl>
+    
+    
+    

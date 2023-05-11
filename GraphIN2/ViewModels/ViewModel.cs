@@ -1,0 +1,303 @@
+﻿using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm;
+using LiveChartsCore.Defaults;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics.Metrics;
+using System.Threading;
+using LiveChartsCore.Measure;
+using System.IO.Ports;
+using System;
+using System.Windows.Threading;
+using System.Diagnostics;
+using System.ComponentModel;
+
+namespace GraphIN2.ViewModels
+{
+    public partial class ViewModel : ObservableObject, INotifyPropertyChanged
+    {
+        private readonly System.Random _random = new();
+        private SerialPort _serialPort;
+        private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
+        public string[] ZoomModeStrings = new[] {"X", "Y", "Both"};
+        public Axis[] XAxes { get;  }
+
+        public Axis[] YAxes { get; }
+        private string _debugText;
+        public string DebugText
+        {
+            get { return _debugText; }
+            set
+            {
+                _debugText = value;
+                OnPropertyChanged(nameof(DebugText));
+            }
+        }
+
+        public List<string> ComPortsNames { get; set; }
+
+        private string _selectedComPort;
+
+        public string SelectedComPort
+        {
+            get { return _selectedComPort; }
+            set
+            {
+                if (_selectedComPort != value)
+                {
+                    _selectedComPort = value;
+                    OnPropertyChanged(nameof(SelectedComPort));
+                }
+            }
+        }
+
+        private ZoomAndPanMode _zoomMode;
+        public ZoomAndPanMode ZoomMode
+        {
+            get => _zoomMode;
+            set
+            {
+                _zoomMode = value;
+                OnPropertyChanged(nameof(ZoomMode));
+            }
+        }
+
+
+        private ZoomAndPanMode _selectedZoomMode;
+        public ZoomAndPanMode SelectedZoomMode
+        {
+            get => _selectedZoomMode;
+            set
+            {
+                _selectedZoomMode = value;
+                OnPropertyChanged(nameof(SelectedZoomMode));
+
+                switch (SelectedZoomMode)
+                {
+                    case ZoomAndPanMode.X:
+                        ZoomMode = ZoomAndPanMode.X;
+                        break;
+                    case ZoomAndPanMode.Y:
+                        ZoomMode = ZoomAndPanMode.Y;
+                        break;
+                    case ZoomAndPanMode.Both:
+                        ZoomMode = ZoomAndPanMode.Both;
+                        break;
+                }
+            }
+        }
+
+
+        private Task _task1;
+        private bool _isRunning = false;
+        private int _rowCounter = 0;
+        private string[] _time;
+        private string[] _values;
+        private int _step = 1;
+        private int _sleepTime = 50;
+
+        private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            // Read the data from the serial port
+            string data = _serialPort.ReadExisting();
+
+
+            DebugText += data;
+            
+        }
+
+        public ViewModel()
+        {
+            ComPortsNames = SerialPort.GetPortNames().ToList();
+
+            DebugText = "123";
+
+            //_serialPort = new SerialPort("COM11", 9600, Parity.None, 8, StopBits.One);
+            //_serialPort.DataReceived += SerialPort_DataReceived;
+            //_serialPort.Open();
+
+
+            _ObservablePoints = new ObservableCollection<ObservablePoint>
+        {
+            new ObservablePoint(1,4.2),
+            new(2,5.3), 
+            new(3,4.8),
+            new(4,5.9),
+            new(5,2),
+            new(6,6),
+            new(7,6),
+                new(8,6),
+        };
+            //_time = ExcelToArrayConverter.ConvertColumnToArray("C:\\Users\\MI\\Desktop\\данные.xlsx", 1);
+            //_values = ExcelToArrayConverter.ConvertColumnToArray("C:\\Users\\MI\\Desktop\\данные.xlsx", 18);
+
+            XAxes = new[] { new Axis() };
+            YAxes = new[] { new Axis() };
+            ZoomMode = ZoomAndPanMode.X;
+
+            Series = new ObservableCollection<ISeries>
+        {
+            new LineSeries<ObservablePoint>
+            {
+                Values = _ObservablePoints,
+                Fill = null,
+                GeometrySize = 0,
+                LineSmoothness = 0
+            }
+        };
+
+        }
+        
+
+        public ObservableCollection<ISeries> Series { get; set; }
+
+        [RelayCommand]
+        public void AddItem()
+        {
+            DebugText = "323";
+            Debug.Write(DebugText);
+            var randomValue = _random.Next(1, 10);
+            _ObservablePoints.Add(new(_ObservablePoints.Count + 1, randomValue));
+        }
+
+        [RelayCommand]
+        public void RemoveItem()
+        {
+            if (_ObservablePoints.Count == 0) return;
+            _ObservablePoints.RemoveAt(0);
+        }
+
+        [RelayCommand]
+        public void UpdateItem()
+        {
+            var randomValue = _random.Next(1, 10);
+            
+            // we grab the last instance in our collection
+            var lastInstance = _ObservablePoints[_ObservablePoints.Count - 1];
+
+            // finally modify the value property and the chart is updated!
+            lastInstance.Y = randomValue;
+        }
+
+        [RelayCommand]
+        public void ReplaceItem()
+        {
+            var randomValue = _random.Next(1, 10);
+            var randomIndex = _random.Next(0, _ObservablePoints.Count - 1);
+            _ObservablePoints[randomIndex] = new(_ObservablePoints.Count + 1, randomValue);
+        }
+
+        [RelayCommand]
+        public void AddSeries()
+        {
+            //  for this sample only 5 series are supported.
+            if (Series.Count == 5) return;
+
+            Series.Add(
+                new LineSeries<int>
+                {
+                    Values = new List<int>
+                    {
+                    _random.Next(0, 10),
+                    _random.Next(0, 10),
+                    _random.Next(0, 10)
+                    }
+                });
+        }
+
+        [RelayCommand]
+        public void RemoveSeries()
+        {
+            if (Series.Count == 1) return;
+
+            Series.RemoveAt(Series.Count - 1);
+        }
+
+        [RelayCommand]
+        public void SeeAll()
+        {
+            var xAxis = XAxes[0];
+            xAxis.MinLimit = null;
+            xAxis.MaxLimit = null;
+
+            var yAxis = YAxes[0];
+            yAxis.MinLimit = null;
+            yAxis.MaxLimit = null;
+        }
+
+        [RelayCommand]
+        public void Run()
+        {
+            var maxIndex = Math.Min(_time.Length, _values.Length);
+
+            if (_isRunning)
+            {
+                _isRunning = false;
+
+            }
+            else
+            {
+                _isRunning = true;
+            }
+
+
+            _task1 = Task.Run(() =>
+            {
+                while (_isRunning && _rowCounter < maxIndex)
+                {
+                    Thread.Sleep(_sleepTime);
+
+                    float parsedValue;
+                    if (float.TryParse(_values[_rowCounter], out parsedValue) == false)
+                    {
+                        parsedValue = 0;
+                    }
+                    _ObservablePoints.Add(new(float.Parse(_time[_rowCounter]), parsedValue));
+                    _rowCounter += _step;
+                }
+            });
+
+        }
+        [RelayCommand]
+        public void Stop()
+        {
+
+        }
+
+        [RelayCommand]
+        public void SwitchZoomAxis()
+        {
+            if (ZoomMode == ZoomAndPanMode.Y)
+            {
+                ZoomMode = ZoomAndPanMode.X;
+                return;
+            }
+            if (ZoomMode == ZoomAndPanMode.X)
+            {
+                ZoomMode = ZoomAndPanMode.Both;
+                return;
+            }
+            if (ZoomMode == ZoomAndPanMode.Both)
+            {
+                ZoomMode = ZoomAndPanMode.Y;
+                return;
+            }
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Debug.WriteLine("efw");
+        }
+
+    }
+}
