@@ -13,15 +13,61 @@
     <Window.DataContext>
         <vms:MainViewModel/>
     </Window.DataContext>
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
 
-        <UC:GraphControl Grid.Column="0"/>
-        <UC:GraphControl Grid.Column="1"/>
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open"/>
+                <MenuItem Header="_Save"/>
+                <MenuItem Header="Save _As"/>
+                <Separator/>
+                <MenuItem Header="_Exit"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Copy"/>
+                <MenuItem Header="_Paste"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Zoom In"/>
+                <MenuItem Header="_Zoom Out"/>
+            </MenuItem>
+        </Menu>
+        <Menu Grid.Row="0" Grid.Column="2"></Menu>
 
+        
+        <GridSplitter Grid.Column="1"
+                      Grid.Row="1" Grid.RowSpan="3"
+                  Width="5"
+                      Background="Gray"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  ResizeBehavior="PreviousAndNext"
+                  ResizeDirection="Columns" />
+        <GridSplitter Grid.Column="0"
+                      Grid.Row="2" Grid.ColumnSpan="3"
+                  Height="5"
+                      Background="Gray"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  ResizeBehavior="PreviousAndNext"
+                  ResizeDirection="Rows" />
+
+        <UC:GraphControl Grid.Column="0" Grid.Row="1"/>
+        <UC:GraphControl Grid.Column="2" Grid.Row="1"/>
+        <UC:GraphControl Grid.Column="0" Grid.Row="3"/>
+        <UC:GraphControl Grid.Column="2" Grid.Row="3"/>
     </Grid>
 
 </Window>

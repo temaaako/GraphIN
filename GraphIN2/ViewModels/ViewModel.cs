@@ -27,7 +27,7 @@ namespace GraphIN2.ViewModels
         private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both", "None"};
+        public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both"}; 
 
 
         public Axis[] XAxes { get; }

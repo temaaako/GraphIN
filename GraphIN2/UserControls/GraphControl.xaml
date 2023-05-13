@@ -14,9 +14,6 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Margin="6" Command="{Binding AddItemCommand}">Add</Button>
-            <Button Margin="6" Command="{Binding RemoveItemCommand}">Remove</Button>
-            <Button Margin="6" Command="{Binding UpdateItemCommand}">Update</Button>
-            <Button Margin="6" Command="{Binding ReplaceItemCommand}">Replace</Button>
             <Button Margin="6" Command="{Binding AddSeriesCommand}">Add Series</Button>
             <Button Margin="6" Command="{Binding RemoveSeriesCommand}">Remove Series</Button>
             <Button Margin="6" Command="{Binding SeeAllCommand}">SeeAll</Button>
@@ -27,14 +24,14 @@
 
 
         </StackPanel>
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
             <lvc:CartesianChart 
             ZoomMode="{Binding ZoomMode}" 
             TooltipPosition="Hidden" 
             Series="{Binding Series}"
             XAxes="{Binding XAxes}"
             YAxes="{Binding YAxes}" 
-            Height="400">
+            Height="Auto">
             </lvc:CartesianChart>
         </ScrollViewer>
     </Grid>
