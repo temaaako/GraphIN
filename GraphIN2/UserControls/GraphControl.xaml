@@ -9,7 +9,7 @@
     </UserControl.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -22,31 +22,21 @@
             <Button Margin="6" Command="{Binding SeeAllCommand}">SeeAll</Button>
             <Button Margin="6" Command="{Binding RunCommand}">Run</Button>
             <Button Margin="6" Command="{Binding StopCommand}">Stop</Button>
-            <Button Margin="6" Command="{Binding SwitchZoomAxisCommand}">SwitchZoomAxis</Button>
-            <ComboBox x:Name="comPortComboBox" ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPort}" Width="120"/>
+            <ComboBox x:Name="ComPortComboBox" ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPort}" Width="120"/>
+            <ComboBox x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Width="120"/>
 
 
         </StackPanel>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="0"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="0"/>
-                <ColumnDefinition Width="0"/>
-            </Grid.ColumnDefinitions>
-            <ScrollViewer Grid.Row="0" >
-                <lvc:CartesianChart 
-                ZoomMode="{Binding ZoomMode}" 
-                TooltipPosition="Hidden" 
-                Series="{Binding Series}"
-                XAxes="{Binding XAxes}"
-                YAxes="{Binding YAxes}" Height="93">
-                </lvc:CartesianChart>
-            </ScrollViewer>
-        </Grid>
+        <ScrollViewer Grid.Row="1">
+            <lvc:CartesianChart 
+            ZoomMode="{Binding ZoomMode}" 
+            TooltipPosition="Hidden" 
+            Series="{Binding Series}"
+            XAxes="{Binding XAxes}"
+            YAxes="{Binding YAxes}" 
+            Height="400">
+            </lvc:CartesianChart>
+        </ScrollViewer>
     </Grid>
 </UserControl>
 

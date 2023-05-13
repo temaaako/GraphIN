@@ -11,37 +11,17 @@
     av:DesignHeight="351.96" av:DesignWidth="856.677">
 
     <Window.DataContext>
-        <vms:ViewModel/>
+        <vms:MainViewModel/>
     </Window.DataContext>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <UC:GraphControl>
-            
-        </UC:GraphControl>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="0"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="0"/>
-                <ColumnDefinition Width="0"/>
-            </Grid.ColumnDefinitions>
-            <ScrollViewer Grid.Row="0" >
-                <lvc:CartesianChart 
-                ZoomMode="{Binding ZoomMode}" 
-                TooltipPosition="Hidden" 
-                Series="{Binding Series}"
-                XAxes="{Binding XAxes}"
-                YAxes="{Binding YAxes}" Height="93">
-                </lvc:CartesianChart>
-            </ScrollViewer>
-        </Grid>
+        <UC:GraphControl Grid.Column="0"/>
+        <UC:GraphControl Grid.Column="1"/>
+
     </Grid>
-    
+
 </Window>

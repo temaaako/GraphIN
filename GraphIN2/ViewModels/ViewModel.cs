@@ -25,8 +25,12 @@ namespace GraphIN2.ViewModels
         private readonly System.Random _random = new();
         private SerialPort _serialPort;
         private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
-        public string[] ZoomModeStrings = new[] {"X", "Y", "Both"};
-        public Axis[] XAxes { get;  }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both", "None"};
+
+
+        public Axis[] XAxes { get; }
 
         public Axis[] YAxes { get; }
         private string _debugText;
@@ -43,7 +47,6 @@ namespace GraphIN2.ViewModels
         public List<string> ComPortsNames { get; set; }
 
         private string _selectedComPort;
-
         public string SelectedComPort
         {
             get { return _selectedComPort; }
@@ -57,6 +60,34 @@ namespace GraphIN2.ViewModels
             }
         }
 
+
+        private string _selectedZoomMode;
+
+        public string SelectedZoomMode
+        {
+            get => _selectedZoomMode;
+            set
+            {
+                _selectedZoomMode = value;
+                switch (_selectedZoomMode)
+                {
+                    case "X":
+                        ZoomMode = ZoomAndPanMode.X;
+                        break;
+                    case "Y":
+                        ZoomMode = ZoomAndPanMode.Y;
+                        break;
+                    case "Both":
+                        ZoomMode = ZoomAndPanMode.Both;
+                        break;
+                    case "None":
+                        ZoomMode = ZoomAndPanMode.None; 
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } 
         private ZoomAndPanMode _zoomMode;
         public ZoomAndPanMode ZoomMode
         {
@@ -65,33 +96,11 @@ namespace GraphIN2.ViewModels
             {
                 _zoomMode = value;
                 OnPropertyChanged(nameof(ZoomMode));
+               
             }
         }
 
-
-        private ZoomAndPanMode _selectedZoomMode;
-        public ZoomAndPanMode SelectedZoomMode
-        {
-            get => _selectedZoomMode;
-            set
-            {
-                _selectedZoomMode = value;
-                OnPropertyChanged(nameof(SelectedZoomMode));
-
-                switch (SelectedZoomMode)
-                {
-                    case ZoomAndPanMode.X:
-                        ZoomMode = ZoomAndPanMode.X;
-                        break;
-                    case ZoomAndPanMode.Y:
-                        ZoomMode = ZoomAndPanMode.Y;
-                        break;
-                    case ZoomAndPanMode.Both:
-                        ZoomMode = ZoomAndPanMode.Both;
-                        break;
-                }
-            }
-        }
+        public ObservableCollection<ISeries> Series { get; set; }
 
 
         private Task _task1;
@@ -101,16 +110,7 @@ namespace GraphIN2.ViewModels
         private string[] _values;
         private int _step = 1;
         private int _sleepTime = 50;
-
-        private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            // Read the data from the serial port
-            string data = _serialPort.ReadExisting();
-
-
-            DebugText += data;
-            
-        }
+        
 
         public ViewModel()
         {
@@ -118,15 +118,18 @@ namespace GraphIN2.ViewModels
 
             DebugText = "123";
 
+            SelectedZoomMode = "Both";
+
             //_serialPort = new SerialPort("COM11", 9600, Parity.None, 8, StopBits.One);
             //_serialPort.DataReceived += SerialPort_DataReceived;
             //_serialPort.Open();
 
+            EventManager.Instance.DataRecieved += OnDataRecieved;
 
             _ObservablePoints = new ObservableCollection<ObservablePoint>
         {
             new ObservablePoint(1,4.2),
-            new(2,5.3), 
+            new(2,5.3),
             new(3,4.8),
             new(4,5.9),
             new(5,2),
@@ -139,7 +142,6 @@ namespace GraphIN2.ViewModels
 
             XAxes = new[] { new Axis() };
             YAxes = new[] { new Axis() };
-            ZoomMode = ZoomAndPanMode.X;
 
             Series = new ObservableCollection<ISeries>
         {
@@ -153,17 +155,20 @@ namespace GraphIN2.ViewModels
         };
 
         }
+
         
 
-        public ObservableCollection<ISeries> Series { get; set; }
 
         [RelayCommand]
         public void AddItem()
         {
-            DebugText = "323";
-            Debug.Write(DebugText);
             var randomValue = _random.Next(1, 10);
             _ObservablePoints.Add(new(_ObservablePoints.Count + 1, randomValue));
+        }
+
+        public void AddItem(double itemToAdd)
+        {
+            _ObservablePoints.Add(new(_ObservablePoints.Count + 1, itemToAdd));
         }
 
         [RelayCommand]
@@ -177,7 +182,7 @@ namespace GraphIN2.ViewModels
         public void UpdateItem()
         {
             var randomValue = _random.Next(1, 10);
-            
+
             // we grab the last instance in our collection
             var lastInstance = _ObservablePoints[_ObservablePoints.Count - 1];
 
@@ -270,28 +275,12 @@ namespace GraphIN2.ViewModels
 
         }
 
-        [RelayCommand]
-        public void SwitchZoomAxis()
+        private void OnDataRecieved(double data)
         {
-            if (ZoomMode == ZoomAndPanMode.Y)
-            {
-                ZoomMode = ZoomAndPanMode.X;
-                return;
-            }
-            if (ZoomMode == ZoomAndPanMode.X)
-            {
-                ZoomMode = ZoomAndPanMode.Both;
-                return;
-            }
-            if (ZoomMode == ZoomAndPanMode.Both)
-            {
-                ZoomMode = ZoomAndPanMode.Y;
-                return;
-            }
+            AddItem(data);
         }
 
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
