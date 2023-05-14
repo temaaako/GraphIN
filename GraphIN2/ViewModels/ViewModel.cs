@@ -28,7 +28,19 @@ namespace GraphIN2.ViewModels
         private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both"}; 
+        public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both"};
+
+        private double _xAxisLimit;
+        public string XAxisLimit
+        {
+            get => _xAxisLimit.ToString();
+            set
+            {
+                double.TryParse(value, out _xAxisLimit);
+                Debug.WriteLine(_xAxisLimit);
+                OnPropertyChanged(nameof(XAxisLimit));
+            }
+        }
 
 
         public Axis[] XAxes { get; }
@@ -101,7 +113,6 @@ namespace GraphIN2.ViewModels
 
         public ViewModel()
         {
-           
 
             DebugText = "123";
 
@@ -115,20 +126,15 @@ namespace GraphIN2.ViewModels
 
             _ObservablePoints = new ObservableCollection<ObservablePoint>
         {
-            new ObservablePoint(1,4.2),
-            new(2,5.3),
-            new(3,4.8),
-            new(4,5.9),
-            new(5,2),
-            new(6,6),
-            new(7,6),
-                new(8,6),
-        };
+            new ObservablePoint(0,0)        };
             //_time = ExcelToArrayConverter.ConvertColumnToArray("C:\\Users\\MI\\Desktop\\данные.xlsx", 1);
             //_values = ExcelToArrayConverter.ConvertColumnToArray("C:\\Users\\MI\\Desktop\\данные.xlsx", 18);
 
             XAxes = new[] { new Axis() };
             YAxes = new[] { new Axis() };
+
+
+            
 
             Series = new ObservableCollection<ISeries>
         {
@@ -147,12 +153,19 @@ namespace GraphIN2.ViewModels
         public void AddItem()
         {
             var randomValue = _random.Next(1, 10);
-            _ObservablePoints.Add(new(_ObservablePoints.Count + 1, randomValue));
+            var xValue = _ObservablePoints.Count + 1;
+            AddItem(new(xValue, randomValue));
+
+            
         }
 
-        public void AddItem(double itemToAdd)
+        public void AddItem(ObservablePoint itemToAdd)
         {
-            _ObservablePoints.Add(new(_ObservablePoints.Count + 1, itemToAdd));
+            _ObservablePoints.Add(itemToAdd);
+
+            var xAxis = XAxes[0];
+            xAxis.MinLimit = itemToAdd.X - 10;
+            xAxis.MaxLimit = itemToAdd.X;
         }
 
         [RelayCommand]
@@ -230,7 +243,7 @@ namespace GraphIN2.ViewModels
 
         }
 
-        private void OnDataRecieved(double data)
+        private void OnDataRecieved(ObservablePoint data)
         {
             AddItem(data);
         }

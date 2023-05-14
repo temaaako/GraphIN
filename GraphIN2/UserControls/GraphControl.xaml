@@ -18,8 +18,10 @@
             <Button Margin="6" Command="{Binding RemoveSeriesCommand}">Remove Series</Button>
             <Button Margin="6" Command="{Binding SeeAllCommand}">SeeAll</Button>
             <Button Margin="6" Command="{Binding ClearCommand}">Clean</Button>
-            <ComboBox x:Name="ComPortComboBox" ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPort}" Width="120"/>
-            <ComboBox x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Width="120"/>
+            <ComboBox Margin="6" x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Height="22"/>
+            <Button Margin="6" Command="{Binding ClearCommand}">Clear</Button>
+            <Button Margin="6" Command="{Binding LimitXCommand}">Ограничить X на:</Button>
+            <TextBox Margin="2" Text="{Binding XAxisLimit}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="100"></TextBox>
 
 
         </StackPanel>
@@ -39,8 +41,14 @@
             LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
             LegendTextPaint="{Binding LegendTextPaint}"
             LegendTextSize="16">
+                
+                
             </lvc:CartesianChart>
+            
+            
         </ScrollViewer>
+
+        
     </Grid>
 </UserControl>
 

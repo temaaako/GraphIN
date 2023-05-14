@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiveChartsCore.Defaults;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,9 +17,9 @@ namespace GraphIN2.ViewModels
 
         public static EventManager Instance => _instance ??= new EventManager();
 
-        public event Action<double> DataRecieved;
+        public event Action<ObservablePoint> DataRecieved;
 
-        public void SendDataRecieved(double data)
+        public void SendDataRecieved(ObservablePoint data)
         {
             DataRecieved?.Invoke(data);
         }

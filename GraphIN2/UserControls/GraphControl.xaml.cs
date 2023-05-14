@@ -24,5 +24,15 @@ namespace GraphIN2.UserControls
         {
             InitializeComponent();
         }
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextNumeric(e.Text);
+        }
+
+        private bool IsTextNumeric(string text)
+        {
+            return int.TryParse(text, out _);
+        }
+
     }
 }
