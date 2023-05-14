@@ -17,8 +17,7 @@
             <Button Margin="6" Command="{Binding AddSeriesCommand}">Add Series</Button>
             <Button Margin="6" Command="{Binding RemoveSeriesCommand}">Remove Series</Button>
             <Button Margin="6" Command="{Binding SeeAllCommand}">SeeAll</Button>
-            <Button Margin="6" Command="{Binding RunCommand}">Run</Button>
-            <Button Margin="6" Command="{Binding StopCommand}">Stop</Button>
+            <Button Margin="6" Command="{Binding ClearCommand}">Clean</Button>
             <ComboBox x:Name="ComPortComboBox" ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPort}" Width="120"/>
             <ComboBox x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Width="120"/>
 
@@ -27,11 +26,19 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
             <lvc:CartesianChart 
             ZoomMode="{Binding ZoomMode}" 
-            TooltipPosition="Hidden" 
+            TooltipPosition="Top"
+            TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+            TooltipTextPaint="{Binding TooltipTextPaint}"
+            TooltipTextSize="16"
             Series="{Binding Series}"
             XAxes="{Binding XAxes}"
             YAxes="{Binding YAxes}" 
-            Height="Auto">
+            Height="Auto"
+            LegendPosition="Bottom"
+                
+            LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
+            LegendTextPaint="{Binding LegendTextPaint}"
+            LegendTextSize="16">
             </lvc:CartesianChart>
         </ScrollViewer>
     </Grid>

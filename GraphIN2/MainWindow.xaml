@@ -27,7 +27,7 @@
         <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
-        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open"/>
                 <MenuItem Header="_Save"/>
@@ -43,8 +43,14 @@
                 <MenuItem Header="_Zoom In"/>
                 <MenuItem Header="_Zoom Out"/>
             </MenuItem>
+            <MenuItem Header="_Run">
+                <MenuItem Header="_Start" Command="{Binding RunCommand}"/>
+                <MenuItem Header="_Stop" Command="{Binding StopCommand}"/>
+                
+            </MenuItem>
+            <ComboBox x:Name="ComPortComboBox"  ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPortName}" Width="80"/>
         </Menu>
-        <Menu Grid.Row="0" Grid.Column="2"></Menu>
+       
 
         
         <GridSplitter Grid.Column="1"

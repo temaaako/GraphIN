@@ -17,6 +17,7 @@ using System;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.ComponentModel;
+using GraphIN2.Other;
 
 namespace GraphIN2.ViewModels
 {
@@ -44,21 +45,7 @@ namespace GraphIN2.ViewModels
             }
         }
 
-        public List<string> ComPortsNames { get; set; }
-
-        private string _selectedComPort;
-        public string SelectedComPort
-        {
-            get { return _selectedComPort; }
-            set
-            {
-                if (_selectedComPort != value)
-                {
-                    _selectedComPort = value;
-                    OnPropertyChanged(nameof(SelectedComPort));
-                }
-            }
-        }
+        
 
 
         private string _selectedZoomMode;
@@ -114,7 +101,7 @@ namespace GraphIN2.ViewModels
 
         public ViewModel()
         {
-            ComPortsNames = SerialPort.GetPortNames().ToList();
+           
 
             DebugText = "123";
 
@@ -145,12 +132,9 @@ namespace GraphIN2.ViewModels
 
             Series = new ObservableCollection<ISeries>
         {
-            new LineSeries<ObservablePoint>
+            new DefaultSeries<ObservablePoint>
             {
                 Values = _ObservablePoints,
-                Fill = null,
-                GeometrySize = 0,
-                LineSmoothness = 0
             }
         };
 
@@ -203,17 +187,15 @@ namespace GraphIN2.ViewModels
         {
             //  for this sample only 5 series are supported.
             if (Series.Count == 5) return;
-
-            Series.Add(
-                new LineSeries<int>
-                {
-                    Values = new List<int>
+            LineSeries<double> newSeries = new LineSeries<double>();
+            newSeries.Values = new List<double>
                     {
                     _random.Next(0, 10),
                     _random.Next(0, 10),
                     _random.Next(0, 10)
-                    }
-                });
+                    };
+            newSeries.Name = "new";
+            Series.Add(newSeries);
         }
 
         [RelayCommand]
@@ -237,36 +219,9 @@ namespace GraphIN2.ViewModels
         }
 
         [RelayCommand]
-        public void Run()
+        public void Clear()
         {
-            var maxIndex = Math.Min(_time.Length, _values.Length);
-
-            if (_isRunning)
-            {
-                _isRunning = false;
-
-            }
-            else
-            {
-                _isRunning = true;
-            }
-
-
-            _task1 = Task.Run(() =>
-            {
-                while (_isRunning && _rowCounter < maxIndex)
-                {
-                    Thread.Sleep(_sleepTime);
-
-                    float parsedValue;
-                    if (float.TryParse(_values[_rowCounter], out parsedValue) == false)
-                    {
-                        parsedValue = 0;
-                    }
-                    _ObservablePoints.Add(new(float.Parse(_time[_rowCounter]), parsedValue));
-                    _rowCounter += _step;
-                }
-            });
+            _ObservablePoints.Clear();
 
         }
         [RelayCommand]
