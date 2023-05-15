@@ -14,8 +14,9 @@ namespace GraphIN2.Other
     {
         public DefaultSeries() : base(){
             Fill = null;
-            GeometrySize = 0;
+            GeometrySize = 10;
             LineSmoothness = 0;
+
         }
     }
 }

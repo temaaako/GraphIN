@@ -29,19 +29,7 @@
 
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open"/>
-                <MenuItem Header="_Save"/>
-                <MenuItem Header="Save _As"/>
-                <Separator/>
                 <MenuItem Header="_Exit"/>
-            </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Copy"/>
-                <MenuItem Header="_Paste"/>
-            </MenuItem>
-            <MenuItem Header="_View">
-                <MenuItem Header="_Zoom In"/>
-                <MenuItem Header="_Zoom Out"/>
             </MenuItem>
             <MenuItem Header="_Run">
                 <MenuItem Header="_Start" Command="{Binding RunCommand}"/>

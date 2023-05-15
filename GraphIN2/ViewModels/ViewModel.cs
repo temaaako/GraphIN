@@ -24,21 +24,28 @@ namespace GraphIN2.ViewModels
     public partial class ViewModel : ObservableObject, INotifyPropertyChanged
     {
         private readonly System.Random _random = new();
-        private SerialPort _serialPort;
         private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private double? xAxisMinLimit = null;
+        private double? xAxisMaxLimit = null;
+
         public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both"};
 
-        private double _xAxisLimit;
-        public string XAxisLimit
+        private double _xAxisSize;
+        public string XAxisSize
         {
-            get => _xAxisLimit.ToString();
+            get => _xAxisSize.ToString();
             set
             {
-                double.TryParse(value, out _xAxisLimit);
-                Debug.WriteLine(_xAxisLimit);
-                OnPropertyChanged(nameof(XAxisLimit));
+                double potentialValue;
+                bool isNumeric = double.TryParse(value, out potentialValue);
+
+                if (isNumeric && potentialValue != _xAxisSize && potentialValue > 0)
+                {
+                    _xAxisSize = potentialValue;
+                    OnPropertyChanged(nameof(XAxisSize));
+                }
             }
         }
 
@@ -102,13 +109,7 @@ namespace GraphIN2.ViewModels
         public ObservableCollection<ISeries> Series { get; set; }
 
 
-        private Task _task1;
-        private bool _isRunning = false;
-        private int _rowCounter = 0;
-        private string[] _time;
-        private string[] _values;
-        private int _step = 1;
-        private int _sleepTime = 50;
+       
         
 
         public ViewModel()
@@ -124,29 +125,27 @@ namespace GraphIN2.ViewModels
 
             EventManager.Instance.DataRecieved += OnDataRecieved;
 
-            _ObservablePoints = new ObservableCollection<ObservablePoint>
-        {
-            new ObservablePoint(0,0)        };
-            //_time = ExcelToArrayConverter.ConvertColumnToArray("C:\\Users\\MI\\Desktop\\данные.xlsx", 1);
-            //_values = ExcelToArrayConverter.ConvertColumnToArray("C:\\Users\\MI\\Desktop\\данные.xlsx", 18);
+            _ObservablePoints = new ObservableCollection<ObservablePoint> { new ObservablePoint(0,0)        };
+            
 
             XAxes = new[] { new Axis() };
             YAxes = new[] { new Axis() };
 
 
-            
+
 
             Series = new ObservableCollection<ISeries>
-        {
-            new DefaultSeries<ObservablePoint>
             {
-                Values = _ObservablePoints,
-            }
-        };
+                new DefaultSeries<ObservablePoint>
+                {
+                    Values = _ObservablePoints,
+                }
+            };
+
 
         }
 
-        
+
 
 
         [RelayCommand]
@@ -161,11 +160,14 @@ namespace GraphIN2.ViewModels
 
         public void AddItem(ObservablePoint itemToAdd)
         {
+            
             _ObservablePoints.Add(itemToAdd);
-
-            var xAxis = XAxes[0];
-            xAxis.MinLimit = itemToAdd.X - 10;
-            xAxis.MaxLimit = itemToAdd.X;
+            if (xAxisMaxLimit!=null && xAxisMinLimit != null)
+            {
+                SetLast();
+            }
+            ShowActualPoints();
+            
         }
 
         [RelayCommand]
@@ -175,18 +177,44 @@ namespace GraphIN2.ViewModels
             _ObservablePoints.RemoveAt(0);
         }
 
+
+
+        
+
         [RelayCommand]
-        public void UpdateItem()
+        public void SetLast()
         {
-            var randomValue = _random.Next(1, 10);
-
-            // we grab the last instance in our collection
-            var lastInstance = _ObservablePoints[_ObservablePoints.Count - 1];
-
-            // finally modify the value property and the chart is updated!
-            lastInstance.Y = randomValue;
+            SetXAxisLimits(_ObservablePoints.Last().X,  _ObservablePoints.Last().X - _xAxisSize);
+            ShowActualPoints();
         }
 
+        [RelayCommand]
+        public void SetFull()
+        {
+            SetXAxisLimits(null, null);
+
+            ShowActualPoints();
+        }
+
+        public void ShowActualPoints()
+        {
+            var xAxis = XAxes[0];
+            xAxis.MaxLimit = xAxisMaxLimit;
+            xAxis.MinLimit = xAxisMinLimit;
+
+            Debug.WriteLine(xAxisMaxLimit);
+            var yAxis = YAxes[0];
+            yAxis.MinLimit = null;
+            yAxis.MaxLimit = null;
+        }
+
+        public void SetXAxisLimits(double? maxLim, double? minLim)
+        {
+            xAxisMaxLimit = maxLim;
+            xAxisMinLimit = minLim;
+        }
+
+        
         [RelayCommand]
         public void ReplaceItem()
         {
@@ -200,7 +228,7 @@ namespace GraphIN2.ViewModels
         {
             //  for this sample only 5 series are supported.
             if (Series.Count == 5) return;
-            LineSeries<double> newSeries = new LineSeries<double>();
+            DefaultSeries<double> newSeries = new DefaultSeries<double>();
             newSeries.Values = new List<double>
                     {
                     _random.Next(0, 10),
@@ -219,17 +247,7 @@ namespace GraphIN2.ViewModels
             Series.RemoveAt(Series.Count - 1);
         }
 
-        [RelayCommand]
-        public void SeeAll()
-        {
-            var xAxis = XAxes[0];
-            xAxis.MinLimit = null;
-            xAxis.MaxLimit = null;
 
-            var yAxis = YAxes[0];
-            yAxis.MinLimit = null;
-            yAxis.MaxLimit = null;
-        }
 
         [RelayCommand]
         public void Clear()
@@ -253,7 +271,6 @@ namespace GraphIN2.ViewModels
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            Debug.WriteLine("efw");
         }
 
     }

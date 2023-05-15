@@ -8,47 +8,56 @@
         <vms:ViewModel/>
     </UserControl.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="111*"/>
+            <ColumnDefinition Width="472*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Grid.ColumnSpan="2">
             <Button Margin="6" Command="{Binding AddItemCommand}">Add</Button>
             <Button Margin="6" Command="{Binding AddSeriesCommand}">Add Series</Button>
             <Button Margin="6" Command="{Binding RemoveSeriesCommand}">Remove Series</Button>
-            <Button Margin="6" Command="{Binding SeeAllCommand}">SeeAll</Button>
-            <Button Margin="6" Command="{Binding ClearCommand}">Clean</Button>
-            <ComboBox Margin="6" x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Height="22"/>
+            
             <Button Margin="6" Command="{Binding ClearCommand}">Clear</Button>
-            <Button Margin="6" Command="{Binding LimitXCommand}">Ограничить X на:</Button>
-            <TextBox Margin="2" Text="{Binding XAxisLimit}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="100"></TextBox>
+            <TextBlock Margin="6">Zoom Mode:</TextBlock>
+            <ComboBox Margin="0" x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Height="22"/>
+            <Button Margin="6" Command="{Binding SetFullCommand}">Show All</Button>
+            <Button Margin="6" Command="{Binding SetLastCommand}">Show last:</Button>
+            <TextBox Margin="0" Text="{Binding XAxisSize}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="50"></TextBox>
+            <CheckBox Margin="6"  Height="20"  TextBlock.FontSize="12" IsChecked="{Binding IsFixed}">Fixed</CheckBox>
 
 
         </StackPanel>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2" >
+
+
             <lvc:CartesianChart 
+                
             ZoomMode="{Binding ZoomMode}" 
             TooltipPosition="Top"
-            TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
-            TooltipTextPaint="{Binding TooltipTextPaint}"
             TooltipTextSize="16"
+                ToolTipService.HasDropShadow="True"
+              ToolTipService.ShowsToolTipOnKeyboardFocus="True"
             Series="{Binding Series}"
             XAxes="{Binding XAxes}"
             YAxes="{Binding YAxes}" 
             Height="Auto"
             LegendPosition="Bottom"
-                
             LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
             LegendTextPaint="{Binding LegendTextPaint}"
             LegendTextSize="16">
-                
-                
+                <lvc:CartesianChart.Tooltip>
+                    <vms:CustomTooltip/>
+                </lvc:CartesianChart.Tooltip>
             </lvc:CartesianChart>
-            
-            
+
+
         </ScrollViewer>
 
-        
+
     </Grid>
 </UserControl>
 

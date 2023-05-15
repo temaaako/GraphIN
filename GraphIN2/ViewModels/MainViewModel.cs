@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -18,6 +19,7 @@ namespace GraphIN2.ViewModels
     {
         private TimeSpan _elapsedTime;
         private DispatcherTimer _timer;
+        private float _stepTime = 0.1f;
 
         SerialPort _serialPort;
         public string _comPortName = "COM11";
@@ -80,8 +82,8 @@ namespace GraphIN2.ViewModels
                         Task.Run(() =>
                         {
                             _serialPort.Open();
+                            StartTimer();
 
-                            _timer.Start();
                         });
                        
                     }
@@ -94,6 +96,7 @@ namespace GraphIN2.ViewModels
                 else
                 {
                     _serialPort.Close();
+                    StopTimer();
                 }
 
 
@@ -107,9 +110,7 @@ namespace GraphIN2.ViewModels
         {
             SelectedComPortName = ComPortsNames.FirstOrDefault("No ports");
 
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(10);
-            _timer.Tick += Timer_Tick;
+            
         }
 
 
@@ -132,7 +133,6 @@ namespace GraphIN2.ViewModels
             }
         }
 
-        double deleteThis = 1;
         private void OnSerialPortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             //if (IsRunning == false) return;
@@ -155,14 +155,40 @@ namespace GraphIN2.ViewModels
                     double numToAdd = decimalNumber;
                     Debug.WriteLine(_elapsedTime.TotalSeconds);
 
-                    EventManager.Instance.SendDataRecieved(new ObservablePoint(deleteThis++, numToAdd));
+                    EventManager.Instance.SendDataRecieved(new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
                 }
             });
         }
         private void Timer_Tick(object sender, EventArgs e)
         {
-            _elapsedTime = _elapsedTime.Add(TimeSpan.FromMilliseconds(10));
-            // update UI with elapsed time
+            _elapsedTime += TimeSpan.FromSeconds(_stepTime);
+            Debug.WriteLine(_elapsedTime);
+        }
+
+
+        private CancellationTokenSource _cancellationTokenSource;
+        private Task _timerTask;
+
+        public void StartTimer()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            _timerTask = Task.Run(() => TimerLoop(_cancellationTokenSource.Token));
+        }
+
+        public void StopTimer()
+        {
+            _cancellationTokenSource.Cancel();
+        }
+
+        private void TimerLoop(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                _elapsedTime += TimeSpan.FromSeconds(_stepTime);
+                Debug.WriteLine($"Elapsed time: {_elapsedTime.TotalSeconds}");
+                // Do something with elapsed time...
+                Thread.Sleep((int)(_stepTime * 1000f)); // Sleep for interval in seconds
+            }
         }
     }
 }
