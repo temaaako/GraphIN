@@ -22,10 +22,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <MenuItem Header="_File">
@@ -34,13 +34,15 @@
             <MenuItem Header="_Run">
                 <MenuItem Header="_Start" Command="{Binding RunCommand}"/>
                 <MenuItem Header="_Stop" Command="{Binding StopCommand}"/>
-                
+
             </MenuItem>
             <ComboBox x:Name="ComPortComboBox"  ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPortName}" Width="80"/>
+            <TextBlock>BaudRate:</TextBlock>
+            <TextBox Text="{Binding BaudRate}" PreviewTextInput="TextBox_PreviewTextInput" Width="72"></TextBox>
         </Menu>
-       
 
-        
+
+
         <GridSplitter Grid.Column="1"
                       Grid.Row="1" Grid.RowSpan="3"
                   Width="5"

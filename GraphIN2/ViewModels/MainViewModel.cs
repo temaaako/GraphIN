@@ -23,7 +23,6 @@ namespace GraphIN2.ViewModels
 
         SerialPort _serialPort;
         public string _comPortName = "COM11";
-        public int _baudRate = 9600;
         public Parity _portParity = Parity.None;
         public int _dataBits = 8;
         public StopBits _stopBits = StopBits.One;
@@ -35,6 +34,30 @@ namespace GraphIN2.ViewModels
                 return SerialPort.GetPortNames().ToList();
             }
         }
+
+
+        private int _baudRate = 9600;
+        public string BaudRate
+        {
+            get { return _baudRate.ToString(); }
+            set
+            {
+                int potentialValue;
+                bool isNumeric = int.TryParse(value, out potentialValue);
+
+                if (potentialValue != _baudRate && isNumeric  && potentialValue > 0)
+                {
+                    if (IsRunning)
+                    {
+                        Stop();
+                    }
+                    _baudRate = potentialValue;
+                    OnPropertyChanged(nameof(BaudRate));
+                }
+            }
+        }
+
+
 
         private string _selectedComPortName;
         public string SelectedComPortName
@@ -74,7 +97,6 @@ namespace GraphIN2.ViewModels
                 {
                     return;
                 }
-
                 if (value)
                 {
                     try
@@ -85,21 +107,17 @@ namespace GraphIN2.ViewModels
                             StartTimer();
 
                         });
-                       
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-
                 }
                 else
                 {
                     _serialPort.Close();
                     StopTimer();
                 }
-
-
             }
         }
 
@@ -109,7 +127,6 @@ namespace GraphIN2.ViewModels
         public MainViewModel()
         {
             SelectedComPortName = ComPortsNames.FirstOrDefault("No ports");
-
             
         }
 
@@ -139,30 +156,32 @@ namespace GraphIN2.ViewModels
 
             Task.Run(() =>
             {
-                byte[] buffer = new byte[_serialPort.BytesToRead];
-                _serialPort.Read(buffer, 0, buffer.Length);
-
-                StringBuilder binaryString = new StringBuilder();
-                foreach (byte b in buffer)
+                try
                 {
-                    binaryString.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
+                    byte[] buffer = new byte[_serialPort.BytesToRead];
+                    _serialPort.Read(buffer, 0, buffer.Length);
+                    if (buffer.Length == 8)
+                    {
+                        double decimalNumber = BitConverter.ToDouble(buffer, 0);
+                        double numToAdd = decimalNumber;
+                        Debug.WriteLine(numToAdd + " E");
+                        EventManager.Instance.SendDataRecieved(new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
+                    }
                 }
-
-                for (int i = 0; i < binaryString.Length; i += 8)
+                catch (Exception e)
                 {
-                    string binaryNumber = binaryString.ToString().Substring(i, 8);
-                    int decimalNumber = Convert.ToInt32(binaryNumber, 2);
-                    double numToAdd = decimalNumber;
-                    Debug.WriteLine(_elapsedTime.TotalSeconds);
-
-                    EventManager.Instance.SendDataRecieved(new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
+                    Debug.WriteLine(e);
                 }
+                
+
+
+
+
             });
         }
         private void Timer_Tick(object sender, EventArgs e)
         {
             _elapsedTime += TimeSpan.FromSeconds(_stepTime);
-            Debug.WriteLine(_elapsedTime);
         }
 
 
@@ -185,9 +204,7 @@ namespace GraphIN2.ViewModels
             while (!cancellationToken.IsCancellationRequested)
             {
                 _elapsedTime += TimeSpan.FromSeconds(_stepTime);
-                Debug.WriteLine($"Elapsed time: {_elapsedTime.TotalSeconds}");
-                // Do something with elapsed time...
-                Thread.Sleep((int)(_stepTime * 1000f)); // Sleep for interval in seconds
+                Thread.Sleep((int)(_stepTime * 1000f)); 
             }
         }
     }
