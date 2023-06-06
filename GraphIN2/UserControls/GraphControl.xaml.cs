@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiveChartsCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace GraphIN2.UserControls
         public GraphControl()
         {
             InitializeComponent();
+            
         }
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -33,6 +35,6 @@ namespace GraphIN2.UserControls
         {
             return int.TryParse(text, out _);
         }
-
+        
     }
 }

@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:GraphIN2.UserControls"
              xmlns:vms="clr-namespace:GraphIN2.ViewModels">
     <UserControl.DataContext>
-        <vms:ViewModel/>
+        <vms:GraphVM/>
     </UserControl.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -28,12 +28,11 @@
             <Button Margin="6" Command="{Binding SetLastCommand}">Show last:</Button>
             <TextBox Margin="0" Text="{Binding XAxisSize}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="50"></TextBox>
             <CheckBox Margin="6"  Height="20"  TextBlock.FontSize="12" IsChecked="{Binding IsFixed}">Fixed</CheckBox>
+            <Button Margin="6" Command="{Binding OpenSettingsCommand}">Settings</Button>
 
 
         </StackPanel>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2" >
-
-
             <lvc:CartesianChart 
                 
             ZoomMode="{Binding ZoomMode}" 
@@ -45,10 +44,13 @@
             XAxes="{Binding XAxes}"
             YAxes="{Binding YAxes}" 
             Height="Auto"
+                
             LegendPosition="Bottom"
             LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
             LegendTextPaint="{Binding LegendTextPaint}"
-            LegendTextSize="16">
+            LegendTextSize="16"
+                >
+                
                 <lvc:CartesianChart.Tooltip>
                     <vms:CustomTooltip/>
                 </lvc:CartesianChart.Tooltip>

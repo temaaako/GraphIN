@@ -19,10 +19,12 @@ using System.Diagnostics;
 using System.ComponentModel;
 using GraphIN2.Other;
 using System.Windows.Media.Converters;
+using GraphIN2.Windows;
+using System.Windows;
 
 namespace GraphIN2.ViewModels
 {
-    public partial class ViewModel : ObservableObject, INotifyPropertyChanged
+    public partial class GraphVM : ObservableObject, INotifyPropertyChanged
     {
         private readonly System.Random _random = new();
         private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
@@ -58,19 +60,9 @@ namespace GraphIN2.ViewModels
         public Axis[] XAxes { get; }
 
         public Axis[] YAxes { get; }
-        private string _debugText;
-        public string DebugText
-        {
-            get { return _debugText; }
-            set
-            {
-                _debugText = value;
-                OnPropertyChanged(nameof(DebugText));
-            }
-        }
-
         
 
+      
 
         private string _selectedZoomMode;
         public string SelectedZoomMode
@@ -115,10 +107,9 @@ namespace GraphIN2.ViewModels
        
         
 
-        public ViewModel()
+        public GraphVM()
         {
 
-            DebugText = "123";
             XAxisSize = "5";
             SelectedZoomMode = "Both";
 
@@ -137,18 +128,63 @@ namespace GraphIN2.ViewModels
 
 
 
-            Series = new ObservableCollection<ISeries>
+            Series = new ObservableCollection<ISeries>();
+            SeriesList = new Dictionary<string, DefaultSeries<ObservablePoint>>();
+            AddNewSeries(new DefaultSeries<ObservablePoint>
             {
-                new DefaultSeries<ObservablePoint>
-                {
-                    Values = _ObservablePoints,
-                }
-            };
-
-
+                Values = _ObservablePoints,
+            });
         }
 
+        public Dictionary<string, DefaultSeries<ObservablePoint>> SeriesList { get; set; }
 
+        private void AddNewSeries(DefaultSeries<ObservablePoint> newSeries)
+        {
+
+            string name = $"Series {Series.Count+1}";
+            Debug.WriteLine($"Name= {name}");
+            if (SeriesList.ContainsKey(name))
+            {
+                MessageBox.Show("You are trying to add an existing graph", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else 
+            {
+                Series.Add(newSeries);
+                SeriesList.Add(name, newSeries);
+            }
+            OnPropertyChanged(nameof(SeriesList));
+        }
+
+        private void RemoveSeries(DefaultSeries<ObservablePoint> seriesToRemove)
+        {
+            string nameToRemove = null;
+            foreach (var item in SeriesList)
+            {
+                if (item.Value == seriesToRemove)
+                {
+                    nameToRemove= item.Key;
+                    break;
+                }
+            }
+            if (nameToRemove!=null)
+            {
+                RemoveSeries(nameToRemove);
+            }
+            OnPropertyChanged(nameof(SeriesList));
+        }
+        private void RemoveSeries(string nameToRemove)
+        {
+            try
+            {
+                Series.Remove(SeriesList[nameToRemove]);
+                SeriesList.Remove(nameToRemove);
+                OnPropertyChanged(nameof(SeriesList));
+            }
+            catch 
+            {
+                MessageBox.Show("You are trying to remove an unexisting graph", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
 
         [RelayCommand]
@@ -245,22 +281,26 @@ namespace GraphIN2.ViewModels
         {
             //  for this sample only 5 series are supported.
             if (Series.Count == 5) return;
-            DefaultSeries<double> newSeries = new DefaultSeries<double>();
-            newSeries.Values = new List<double>
-                    {
-                    _random.Next(0, 10),
-                    _random.Next(0, 10),
-                    _random.Next(0, 10)
-                    };
-            newSeries.Name = "new";
-            Series.Add(newSeries);
+            DefaultSeries<ObservablePoint> newSeries = new DefaultSeries<ObservablePoint>();
+            var obsCollection = new ObservableCollection<ObservablePoint>();
+            newSeries.Values = obsCollection;
+            newSeries.Name = $"Series {Series.Count + 1}";
+
+            for (int i = 0; i < 5; i++)
+            {
+                var randomValue = _random.Next(1, 10);
+                var xValue = i;
+                obsCollection.Add(new(xValue, randomValue));
+            }
+
+            AddNewSeries(newSeries);
         }
         [RelayCommand]
         public void RemoveSeries()
         {
             if (Series.Count == 1) return;
 
-            Series.RemoveAt(Series.Count - 1);
+            RemoveSeries(SeriesList.Last().Key);
         }
 
 
@@ -271,7 +311,22 @@ namespace GraphIN2.ViewModels
             _ObservablePoints.Clear();
         }
 
-        
+
+        GraphSettingsWindow settingsWindow;
+
+        [RelayCommand]
+        public void OpenSettings()
+        {
+            if (settingsWindow != null && settingsWindow.IsVisible) return;
+            settingsWindow = new GraphSettingsWindow
+            {
+                DataContext = new GraphSettingsVM(this)
+            };
+            settingsWindow.Show();
+        }
+
+
+
 
         private void OnDataRecieved(ObservablePoint data)
         {

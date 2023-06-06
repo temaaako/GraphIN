@@ -1,0 +1,36 @@
+﻿<Window x:Class="GraphIN2.Windows.GraphSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GraphIN2.Windows"
+        xmlns:vms="clr-namespace:GraphIN2.ViewModels"
+        Title="Settings"
+       Height="300" Width="300"
+        Topmost="True"
+        >
+
+
+    <!--<Window.DataContext>
+        <vms:GraphSettingsVM/>
+    </Window.DataContext>-->
+
+    <Grid>
+        <ListBox ItemsSource="{Binding Items}" 
+         local:SelectedItemsBahavior.SelectedItems="{Binding SelectedItems}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <CheckBox Name="CheckBoxZone"
+                  IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem},
+                                          Path=IsSelected}">
+                        <TextBlock Width="{Binding ElementName=SizingBorder,
+                                           Path=ActualWidth}"
+                           Foreground="Black"
+                           Text="{Binding}"
+                           TextWrapping="Wrap" />
+                    </CheckBox>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>

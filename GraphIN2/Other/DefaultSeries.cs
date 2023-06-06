@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GraphIN2.Other
 {
-    internal class DefaultSeries<TModel> : LineSeries<TModel, CircleGeometry, LabelGeometry>
+    public class DefaultSeries<TModel> : LineSeries<TModel, CircleGeometry, LabelGeometry>
     {
         public DefaultSeries() : base(){
             Fill = null;
