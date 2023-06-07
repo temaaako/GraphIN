@@ -15,6 +15,10 @@ using System.Windows.Threading;
 
 namespace GraphIN2.ViewModels
 {
+    public enum DataFormat
+    {
+        DOUBLE, INT8, UINT8, INT16,UINT16, INT32, UINT32, INT64, UINT64
+    }
     public partial class MainViewModel : ObservableObject, INotifyPropertyChanged
     {
         private TimeSpan _elapsedTime;
@@ -56,8 +60,30 @@ namespace GraphIN2.ViewModels
                 }
             }
         }
+        public List<DataFormat> DataFormats { get; }
 
+        private DataFormat _selectedDataFormat = DataFormat.DOUBLE;
+        public DataFormat SelectedDataFormat
+        {
+            get { return _selectedDataFormat; }
+            set
+            {
+                _selectedDataFormat = value;
+                OnPropertyChanged(nameof(SelectedDataFormat));
+            }
+        }
 
+        private int _savedSeconds=100;
+
+        public int SavedSeconds
+        {
+            get { return _savedSeconds; }
+            set
+            {
+                _savedSeconds = value;
+                OnPropertyChanged(nameof(SavedSeconds));
+            }
+        }
 
         private string _selectedComPortName;
         public string SelectedComPortName
@@ -81,6 +107,32 @@ namespace GraphIN2.ViewModels
                 }
             }
         }
+
+        public List<int> ParameterCounts { get; } = Enumerable.Range(1, 8).ToList();
+
+        private int _selectedParameterCount = 1;
+
+        public int SelectedParameterCount
+        {
+            get { return _selectedParameterCount; }
+            set
+            {
+                _selectedParameterCount = value;
+                OnPropertyChanged(nameof(SelectedParameterCount));
+            }
+        }
+
+        private bool _hasHeader;
+        public bool HasHeader
+        {
+            get { return _hasHeader; }
+            set
+            {
+                _hasHeader = value;
+                OnPropertyChanged(nameof(HasHeader));
+            }
+        }
+
         public bool IsRunning
         {
             get
@@ -127,7 +179,7 @@ namespace GraphIN2.ViewModels
         public MainViewModel()
         {
             SelectedComPortName = ComPortsNames.FirstOrDefault("No ports");
-            
+            DataFormats = Enum.GetValues(typeof(DataFormat)).Cast<DataFormat>().ToList();
         }
 
 
@@ -170,7 +222,7 @@ namespace GraphIN2.ViewModels
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e);
+                    MessageBox.Show(e.Message);
                 }
                 
 
