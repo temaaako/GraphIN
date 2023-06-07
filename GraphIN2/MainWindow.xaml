@@ -16,7 +16,16 @@
     <Window.DataContext>
         <vms:MainViewModel/>
     </Window.DataContext>
-
+    <Window.Resources>
+        <Style x:Key="NoTextHighlightStyle" TargetType="TextBlock">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="Black" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -39,9 +48,14 @@
                 <MenuItem Header="_Stop" Command="{Binding StopCommand}"/>
 
             </MenuItem>
-            <ComboBox x:Name="ComPortComboBox"  ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPortName}" Width="80"/>
-            <TextBlock>BaudRate:</TextBlock>
+            <TextBlock Style="{StaticResource NoTextHighlightStyle}"  >BaudRate:</TextBlock>
             <TextBox Text="{Binding BaudRate}" PreviewTextInput="TextBox_PreviewTextInput" Width="72"></TextBox>
+            <TextBlock>Port:</TextBlock>
+            <ComboBox x:Name="ComPortComboBox"  ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPortName}" Width="80"/>
+            <TextBlock>Data format:</TextBlock>
+            <ComboBox x:Name="DataFormatComboBox"  ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPortName}" Width="80"/>
+            <TextBlock>Parameters count:</TextBlock>
+            <ComboBox x:Name="ParamCountComboBox"  ItemsSource="{Binding ComPortsNames}" SelectedItem="{Binding SelectedComPortName}" Width="80"/>
         </Menu>
 
 

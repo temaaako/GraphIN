@@ -14,9 +14,10 @@
             <Setter Property="BorderBrush" Value="#007ACC" />
             <Setter Property="Foreground" Value="#007ACC" />
             <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="6" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Template">
@@ -25,7 +26,7 @@
                         <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="6">
+                            CornerRadius="3">
                             <ContentPresenter HorizontalAlignment="Center" 
                                           VerticalAlignment="Center" />
                         </Border>
@@ -33,6 +34,63 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="FlatTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="6" />
+            <!-- Increase the margin value -->
+            <Setter Property="Foreground" Value="#007ACC" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="FlatCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#007ACC" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="border"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Background="{TemplateBinding Background}">
+                                <Grid x:Name="markGrid"
+                                  Width="10"
+                                  Height="10"
+                                  Background="#007ACC"
+                                  Visibility="Collapsed"
+                                  Margin="5" />
+                            </Border>
+                            <ContentPresenter Grid.Column="1"
+                                          Margin="4,0,0,0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Left"
+                                          RecognizesAccessKey="True" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="markGrid" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6" />
+                                <Setter TargetName="markGrid" Property="Background" Value="#888" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+
     </UserControl.Resources>
 
 
@@ -47,18 +105,20 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button Margin="6" Command="{Binding AddItemCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add</Button>
-            <Button Margin="6" Command="{Binding AddSeriesCommand}">Add Series</Button>
-            <Button Margin="6" Command="{Binding RemoveSeriesCommand}">Remove Series</Button>
-            
-            <Button Margin="6" Command="{Binding ClearCommand}">Clear</Button>
-            <TextBlock Margin="6">Zoom Mode:</TextBlock>
+            <Button Command="{Binding AddItemCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add</Button>
+            <Button  Command="{Binding AddSeriesCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add Series</Button>
+            <Button Command="{Binding RemoveSeriesCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Remove Series</Button>
+
+            <Button Command="{Binding ClearCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Clear</Button>
+            <TextBlock  Style="{StaticResource FlatTextBlockStyle}">Zoom Mode:</TextBlock>
             <ComboBox Margin="0" x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Height="22"/>
-            <Button Margin="6" Command="{Binding SetFullCommand}">Show All</Button>
-            <Button Margin="6" Command="{Binding SetLastCommand}">Show last:</Button>
+
+            <Button Command="{Binding SetFullCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Show All</Button>
+            <Button Command="{Binding SetLastCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Show last:</Button>
             <TextBox Margin="0" Text="{Binding XAxisSize}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="50"></TextBox>
-            <CheckBox Margin="6"  Height="20"  TextBlock.FontSize="12" IsChecked="{Binding IsFixed}">Fixed</CheckBox>
-            <Button Margin="6" Command="{Binding OpenSettingsCommand}">Settings</Button>
+            <CheckBox Margin="6" Height="20" TextBlock.FontSize="12" IsChecked="{Binding IsFixed}" Style="{StaticResource FlatCheckBoxStyle}">Fixed</CheckBox>
+
+            <Button  Command="{Binding OpenSettingsCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Settings</Button>
 
 
         </StackPanel>
