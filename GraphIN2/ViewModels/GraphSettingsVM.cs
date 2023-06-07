@@ -17,44 +17,52 @@ namespace GraphIN2.ViewModels
     public partial class GraphSettingsVM : ObservableObject, INotifyPropertyChanged
     {
         public GraphVM ParentObject { get; set; }
-        private ObservableCollection<string> _items;
-        private ObservableCollection<string> _selectedItems;
+        //private ObservableCollection<string> _items;
+        //private ObservableCollection<string> _selectedItems;
 
-
+        public ObservableCollection<ItemViewModel> Items { get; set; }
+        public ObservableCollection<ItemViewModel> SelectedItems { get; set; }
 
         public GraphSettingsVM(GraphVM parent) {
             ParentObject = parent;
-            parent.PropertyChanged += SeriesPropertyChanged;
+            //parent.PropertyChanged += SeriesPropertyChanged;
 
-            Items = new ObservableCollection<string>();
+
+            //SelectedItems = new ObservableCollection<string>();
+
+            Items = new ObservableCollection<ItemViewModel>();
+
             foreach (var item in parent.SeriesList)
             {
-                Items.Add(item.Key);
+                Items.Add(new ItemViewModel(item.Key, true));
             }
-
-            SelectedItems = new ObservableCollection<string>();
-        }
-
-
-        public ObservableCollection<string> Items
-        {
-            get { return _items; }
-            set
+            Debug.WriteLine("new");
+            SelectedItems = new ObservableCollection<ItemViewModel>
             {
-                _items = value;
-                OnPropertyChanged(nameof(Items));
-            }
+                new ItemViewModel("hui", true)
+            };
         }
 
-        public ObservableCollection<string> SelectedItems
-        {
-            get { return _selectedItems; }
-            set
-            {
-                _selectedItems = value;
-                OnPropertyChanged(nameof(SelectedItems));
-            }
-        }
+
+        //public ObservableCollection<string> Items
+        //{
+        //    get { return _items; }
+        //    set
+        //    {
+        //        _items = value;
+        //        OnPropertyChanged(nameof(Items));
+        //    }
+        //}
+
+        //public ObservableCollection<string> SelectedItems
+        //{
+        //    get { return _selectedItems; }
+        //    set
+        //    {
+        //        _selectedItems = value;
+        //        OnPropertyChanged(nameof(SelectedItems));
+        //    }
+        //}
 
        
         public event PropertyChangedEventHandler PropertyChanged;
@@ -64,17 +72,17 @@ namespace GraphIN2.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void SeriesPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ParentObject.SeriesList))
-            {
-                Items = new ObservableCollection<string>();
-                foreach (var item in ParentObject.SeriesList)
-                {
-                    Items.Add(item.Key);
-                }
-            }
-        }
+        //private void SeriesPropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    if (e.PropertyName == nameof(ParentObject.SeriesList))
+        //    {
+        //        Items = new ObservableCollection<string>();
+        //        foreach (var item in ParentObject.SeriesList)
+        //        {
+        //            Items.Add(item.Key);
+        //        }
+        //    }
+        //}
 
     }
 }

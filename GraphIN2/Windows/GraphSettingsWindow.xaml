@@ -16,18 +16,22 @@
 
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="289*"/>
+            <ColumnDefinition Width="11*"/>
+        </Grid.ColumnDefinitions>
         <ListBox ItemsSource="{Binding Items}"
-                 SelectionMode="Multiple"
-                 local:SelectedItemsBehavior.SelectedItems="{Binding SelectedItems}">
+         SelectionMode="Multiple"
+         local:SelectedItemsBehavior.SelectedItems="{Binding SelectedItems}" Grid.ColumnSpan="2">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
-                    <Setter Property="IsSelected" Value="True" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <CheckBox Content="{Binding}"
-                              IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" />
+                    <CheckBox Content="{Binding Name}"
+                      IsChecked="{Binding IsSelected}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
