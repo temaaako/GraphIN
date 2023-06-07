@@ -320,8 +320,10 @@ namespace GraphIN2.ViewModels
             if (settingsWindow != null && settingsWindow.IsVisible) return;
             settingsWindow = new GraphSettingsWindow
             {
+                
                 DataContext = new GraphSettingsVM(this)
             };
+            
             settingsWindow.Show();
         }
 

@@ -10,27 +10,28 @@
         Topmost="True"
         >
 
+    <Window.Resources>
+        <local:SelectedItemsConverter x:Key="SelectedItemsConverter" />
+    </Window.Resources>
 
-    <!--<Window.DataContext>
-        <vms:GraphSettingsVM/>
-    </Window.DataContext>-->
 
     <Grid>
-        <ListBox ItemsSource="{Binding Items}" 
-         local:SelectedItemsBahavior.SelectedItems="{Binding SelectedItems}">
+        <ListBox ItemsSource="{Binding Items}"
+                 SelectionMode="Multiple"
+                 local:SelectedItemsBehavior.SelectedItems="{Binding SelectedItems}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="IsSelected" Value="True" />
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <CheckBox Name="CheckBoxZone"
-                  IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem},
-                                          Path=IsSelected}">
-                        <TextBlock Width="{Binding ElementName=SizingBorder,
-                                           Path=ActualWidth}"
-                           Foreground="Black"
-                           Text="{Binding}"
-                           TextWrapping="Wrap" />
-                    </CheckBox>
+                    <CheckBox Content="{Binding}"
+                              IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+
     </Grid>
 </Window>

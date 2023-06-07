@@ -1,6 +1,7 @@
 ﻿using GraphIN2.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +21,16 @@ namespace GraphIN2.Windows
     /// </summary>
     public partial class GraphSettingsWindow : Window
     {
+
+        public GraphSettingsVM viewModel;
         public GraphSettingsWindow()
         {
             InitializeComponent();
+            
         }
-       
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //viewModel.SaveSelectedItems(); // Сохранение выбранных элементов при закрытии окна
+        }
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,8 @@ namespace GraphIN2.ViewModels
         public GraphVM ParentObject { get; set; }
         private ObservableCollection<string> _items;
         private ObservableCollection<string> _selectedItems;
+
+
 
         public GraphSettingsVM(GraphVM parent) {
             ParentObject = parent;
@@ -33,7 +36,6 @@ namespace GraphIN2.ViewModels
         }
 
 
-
         public ObservableCollection<string> Items
         {
             get { return _items; }
@@ -43,6 +45,7 @@ namespace GraphIN2.ViewModels
                 OnPropertyChanged(nameof(Items));
             }
         }
+
         public ObservableCollection<string> SelectedItems
         {
             get { return _selectedItems; }
@@ -53,10 +56,10 @@ namespace GraphIN2.ViewModels
             }
         }
 
-
+       
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected new virtual void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
