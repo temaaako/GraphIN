@@ -8,7 +8,10 @@
     mc:Ignorable="av" 
     xmlns:UC="clr-namespace:GraphIN2.UserControls"
     x:Class="GraphIN2.MainWindow"
-    av:DesignHeight="351.96" av:DesignWidth="856.677">
+    Title="GraphIN"
+    av:DesignHeight="351.96" av:DesignWidth="856.677"
+    
+    >
 
     <Window.DataContext>
         <vms:MainViewModel/>

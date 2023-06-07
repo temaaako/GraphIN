@@ -33,9 +33,10 @@ namespace GraphIN2.ViewModels
         private double? xAxisMinLimit = null;
         private double? xAxisMaxLimit = null;
 
-        
 
-        public ObservableCollection<string> ZoomModeNames { get;} = new ObservableCollection<string>{"X","Y","Both"};
+        public ObservableCollection<ISeries> Series { get; set; }
+
+        public ObservableCollection<string> ZoomModeNames { get; } = new ObservableCollection<string> { "X", "Y", "Both" };
 
         private double _xAxisSize;
         public string XAxisSize
@@ -60,9 +61,9 @@ namespace GraphIN2.ViewModels
         public Axis[] XAxes { get; }
 
         public Axis[] YAxes { get; }
-        
 
-      
+
+
 
         private string _selectedZoomMode;
         public string SelectedZoomMode
@@ -83,13 +84,13 @@ namespace GraphIN2.ViewModels
                         ZoomMode = ZoomAndPanMode.Both;
                         break;
                     case "None":
-                        ZoomMode = ZoomAndPanMode.None; 
+                        ZoomMode = ZoomAndPanMode.None;
                         break;
                     default:
                         break;
                 }
             }
-        } 
+        }
         private ZoomAndPanMode _zoomMode;
         public ZoomAndPanMode ZoomMode
         {
@@ -101,11 +102,8 @@ namespace GraphIN2.ViewModels
             }
         }
 
-        public ObservableCollection<ISeries> Series { get; set; }
 
 
-       
-        
 
         public GraphVM()
         {
@@ -113,14 +111,11 @@ namespace GraphIN2.ViewModels
             XAxisSize = "5";
             SelectedZoomMode = "Both";
 
-            //_serialPort = new SerialPort("COM11", 9600, Parity.None, 8, StopBits.One);
-            //_serialPort.DataReceived += SerialPort_DataReceived;
-            //_serialPort.Open();
 
             EventManager.Instance.DataRecieved += OnDataRecieved;
 
-            _ObservablePoints = new ObservableCollection<ObservablePoint> { new ObservablePoint(0,0)        };
-            
+            _ObservablePoints = new ObservableCollection<ObservablePoint> { new ObservablePoint(0, 0) };
+
 
             XAxes = new[] { new Axis() };
             YAxes = new[] { new Axis() };
@@ -129,60 +124,41 @@ namespace GraphIN2.ViewModels
 
 
             Series = new ObservableCollection<ISeries>();
-            SeriesList = new Dictionary<string, DefaultSeries<ObservablePoint>>();
             AddNewSeries(new DefaultSeries<ObservablePoint>
             {
                 Values = _ObservablePoints,
             });
         }
 
-        public Dictionary<string, DefaultSeries<ObservablePoint>> SeriesList { get; set; }
 
         private void AddNewSeries(DefaultSeries<ObservablePoint> newSeries)
         {
 
-            string name = $"Series {Series.Count+1}";
-            Debug.WriteLine($"Name= {name}");
-            if (SeriesList.ContainsKey(name))
-            {
-                MessageBox.Show("You are trying to add an existing graph", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else 
-            {
-                Series.Add(newSeries);
-                SeriesList.Add(name, newSeries);
-            }
-            OnPropertyChanged(nameof(SeriesList));
+            string name = $"Series {Series.Count + 1}";
+            newSeries.Name= name;
+
+            Series.Add(newSeries);
+            OnPropertyChanged(nameof(Series));
         }
 
-        private void RemoveSeries(DefaultSeries<ObservablePoint> seriesToRemove)
+        private void RemoveSeries(ISeries seriesToRemove)
         {
-            string nameToRemove = null;
-            foreach (var item in SeriesList)
-            {
-                if (item.Value == seriesToRemove)
-                {
-                    nameToRemove= item.Key;
-                    break;
-                }
-            }
-            if (nameToRemove!=null)
-            {
-                RemoveSeries(nameToRemove);
-            }
-            OnPropertyChanged(nameof(SeriesList));
+            Series.Remove(seriesToRemove);
+            OnPropertyChanged(nameof(Series));
+
         }
+
+    
         private void RemoveSeries(string nameToRemove)
         {
-            try
+            foreach (var item in Series)
             {
-                Series.Remove(SeriesList[nameToRemove]);
-                SeriesList.Remove(nameToRemove);
-                OnPropertyChanged(nameof(SeriesList));
-            }
-            catch 
-            {
-                MessageBox.Show("You are trying to remove an unexisting graph", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (item.Name == nameToRemove)
+                {
+                    Series.Remove(item);
+                    OnPropertyChanged(nameof(Series));
+                    break;
+                }
             }
         }
 
@@ -194,7 +170,7 @@ namespace GraphIN2.ViewModels
             var xValue = _ObservablePoints.Count + 1;
             AddItem(new(xValue, randomValue));
 
-            
+
         }
 
         public void AddItem(ObservablePoint itemToAdd)
@@ -226,7 +202,7 @@ namespace GraphIN2.ViewModels
         {
             if (IsFixed)
             {
-                while (_ObservablePoints.Last().X>_lastFixedX+ _xAxisSize)
+                while (_ObservablePoints.Last().X > _lastFixedX + _xAxisSize)
                 {
                     _lastFixedX += _xAxisSize;
                 }
@@ -254,7 +230,7 @@ namespace GraphIN2.ViewModels
             xAxis.MaxLimit = xAxisMaxLimit;
             xAxis.MinLimit = xAxisMinLimit;
 
-            
+
             var yAxis = YAxes[0];
             yAxis.MinLimit = null;
             yAxis.MaxLimit = null;
@@ -266,7 +242,7 @@ namespace GraphIN2.ViewModels
             xAxisMinLimit = minLim;
         }
 
-        
+
         [RelayCommand]
         public void ReplaceItem()
         {
@@ -300,7 +276,7 @@ namespace GraphIN2.ViewModels
         {
             if (Series.Count == 1) return;
 
-            RemoveSeries(SeriesList.Last().Key);
+            RemoveSeries(Series.Last());
         }
 
 
@@ -320,10 +296,10 @@ namespace GraphIN2.ViewModels
             if (settingsWindow != null && settingsWindow.IsVisible) return;
             settingsWindow = new GraphSettingsWindow
             {
-                
+
                 DataContext = new GraphSettingsVM(this)
             };
-            
+
             settingsWindow.Show();
         }
 
