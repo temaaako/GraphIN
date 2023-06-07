@@ -8,6 +8,7 @@
         Title="Settings"
        Height="300" Width="300"
         Topmost="True"
+        Icon="settings.ico"
         >
 
     <Window.Resources>

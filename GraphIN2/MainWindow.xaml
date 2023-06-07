@@ -10,7 +10,7 @@
     x:Class="GraphIN2.MainWindow"
     Title="GraphIN"
     av:DesignHeight="351.96" av:DesignWidth="856.677"
-    
+    Icon="icon.ico"
     >
 
     <Window.DataContext>
