@@ -27,13 +27,12 @@ namespace GraphIN2.ViewModels
     public partial class GraphVM : ObservableObject, INotifyPropertyChanged
     {
         private readonly System.Random _random = new();
-        private readonly ObservableCollection<ObservablePoint> _ObservablePoints;
         public event PropertyChangedEventHandler PropertyChanged;
 
         private double? xAxisMinLimit = null;
         private double? xAxisMaxLimit = null;
 
-
+        private double _lastBiggestX = 0;
         public ObservableCollection<ISeries> Series { get; set; }
 
         public ObservableCollection<string> ZoomModeNames { get; } = new ObservableCollection<string> { "X", "Y", "Both" };
@@ -114,7 +113,6 @@ namespace GraphIN2.ViewModels
 
             EventManager.Instance.DataRecieved += OnDataRecieved;
 
-            _ObservablePoints = new ObservableCollection<ObservablePoint> { new ObservablePoint(0, 0) };
 
 
             XAxes = new[] { new Axis() };
@@ -124,10 +122,11 @@ namespace GraphIN2.ViewModels
 
 
             Series = new ObservableCollection<ISeries>();
-            AddNewSeries(new DefaultSeries<ObservablePoint>
-            {
-                Values = _ObservablePoints,
-            });
+            AddNewSeries(new DefaultSeries<ObservablePoint>());
+            AddNewSeries(new DefaultSeries<ObservablePoint>());
+            AddNewSeries(new DefaultSeries<ObservablePoint>());
+            AddNewSeries(new DefaultSeries<ObservablePoint>());
+            AddNewSeries(new DefaultSeries<ObservablePoint>());
         }
 
 
@@ -136,8 +135,9 @@ namespace GraphIN2.ViewModels
 
             string name = $"Series {Series.Count + 1}";
             newSeries.Name= name;
-
+            newSeries.Values = new ObservableCollection<ObservablePoint>();
             Series.Add(newSeries);
+
             OnPropertyChanged(nameof(Series));
         }
 
@@ -167,17 +167,43 @@ namespace GraphIN2.ViewModels
         public void AddItem()
         {
             var randomValue = _random.Next(1, 10);
-            var xValue = _ObservablePoints.Count + 1;
-            AddItem(new(xValue, randomValue));
+            var xValue = _lastBiggestX + 1;
+
+
+            AddItem(_random.Next(0, 5), new(xValue, randomValue));
 
 
         }
 
-        public void AddItem(ObservablePoint itemToAdd)
+        private object collectionLock = new object();
+
+        public void AddItem(int index, ObservablePoint itemToAdd)
         {
+            
+                //while (Series.Count <= index) 
+                //{
+                //    AddNewSeries(new DefaultSeries<ObservablePoint>());
+                //}
+
             Task.Run(() =>
             {
-                _ObservablePoints.Add(itemToAdd);
+
+                Debug.WriteLine(itemToAdd.Y);
+                Debug.WriteLine(index);
+                Debug.WriteLine(Series.Count);
+                Debug.WriteLine(((ObservableCollection<ObservablePoint>)Series[index].Values).Count);
+                if (itemToAdd.Y<100 && itemToAdd.X>=_lastBiggestX-2)
+                {
+                    lock (collectionLock)
+                    {
+                        ((ObservableCollection<ObservablePoint>)Series[index].Values).Add(itemToAdd);
+                    }
+                    
+
+                    _lastBiggestX = (double)itemToAdd.X;
+                }
+                
+
                 if (xAxisMaxLimit != null && xAxisMinLimit != null)
                 {
                     SetLast();
@@ -186,12 +212,7 @@ namespace GraphIN2.ViewModels
             });
         }
 
-        [RelayCommand]
-        public void RemoveItem()
-        {
-            if (_ObservablePoints.Count == 0) return;
-            _ObservablePoints.RemoveAt(0);
-        }
+
 
 
 
@@ -202,7 +223,7 @@ namespace GraphIN2.ViewModels
         {
             if (IsFixed)
             {
-                while (_ObservablePoints.Last().X > _lastFixedX + _xAxisSize)
+                while (_lastBiggestX > _lastFixedX + _xAxisSize)
                 {
                     _lastFixedX += _xAxisSize;
                 }
@@ -211,7 +232,7 @@ namespace GraphIN2.ViewModels
             }
             else
             {
-                SetXAxisLimits(_ObservablePoints.Last().X - _xAxisSize, _ObservablePoints.Last().X);
+                SetXAxisLimits(_lastBiggestX - _xAxisSize, _lastBiggestX);
             }
             ShowActualPoints();
         }
@@ -232,8 +253,15 @@ namespace GraphIN2.ViewModels
 
 
             var yAxis = YAxes[0];
-            yAxis.MinLimit = null;
-            yAxis.MaxLimit = null;
+            if (yAxis.MinLimit != null)
+            {
+                yAxis.MinLimit = null;
+            }
+            if (yAxis.MaxLimit != null)
+            {
+                yAxis.MaxLimit = null;
+
+            }
         }
 
         public void SetXAxisLimits(double? minLim, double? maxLim)
@@ -243,13 +271,6 @@ namespace GraphIN2.ViewModels
         }
 
 
-        [RelayCommand]
-        public void ReplaceItem()
-        {
-            var randomValue = _random.Next(1, 10);
-            var randomIndex = _random.Next(0, _ObservablePoints.Count - 1);
-            _ObservablePoints[randomIndex] = new(_ObservablePoints.Count + 1, randomValue);
-        }
 
 
         [RelayCommand]
@@ -284,7 +305,11 @@ namespace GraphIN2.ViewModels
         [RelayCommand]
         public void Clear()
         {
-            _ObservablePoints.Clear();
+            if (Series == null) return;
+            foreach (var collection in Series)
+            {
+                collection.Values = new ObservableCollection<ObservablePoint>();
+            }
         }
 
 
@@ -306,11 +331,11 @@ namespace GraphIN2.ViewModels
 
 
 
-        private void OnDataRecieved(ObservablePoint data)
+        private void OnDataRecieved(int index, ObservablePoint data)
         {
             if (IsActive)
             {
-                AddItem(data);
+                AddItem(index, data);
             }
         }
 

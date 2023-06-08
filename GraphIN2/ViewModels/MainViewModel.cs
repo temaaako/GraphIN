@@ -233,7 +233,7 @@ namespace GraphIN2.ViewModels
             {
                 try
                 {
-                    int signalCount = 4; // Number of signals you are expecting
+                    int signalCount = 2; // Number of signals you are expecting
                     int bytesPerSignal = 1; // Assuming each signal is encoded as int8 (1 byte)
                     byte[] buffer = new byte[signalCount * bytesPerSignal];
                     _serialPort.Read(buffer, 0, buffer.Length);
@@ -241,40 +241,44 @@ namespace GraphIN2.ViewModels
                     string binaryString = string.Join(" ", buffer.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
                     Debug.WriteLine((sbyte)buffer[1]);
 
+                    for (int i = 0; i < buffer.Length; i++)
+                    {
+                        EventManager.Instance.SendDataRecieved(i, new ObservablePoint(_elapsedTime.TotalSeconds, (sbyte)buffer[i]));
+                    }
 
-                    if (SelectedDataFormat == DataFormat.DOUBLE)
-                    {
-                        if (buffer.Length == 8)
-                        {
-                            double decimalNumber = BitConverter.ToDouble(buffer, 0);
-                            double numToAdd = decimalNumber;
-                            Debug.WriteLine(numToAdd + " ADDED");
-                            EventManager.Instance.SendDataRecieved(new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
-                            return;
-                        }
-                    }
-                    if (SelectedDataFormat == DataFormat.INT8)
-                    {
-                        if (buffer.Length == 1)
-                        {
-                            sbyte signedByte = (sbyte)buffer[0];
-                            int numToAdd = signedByte;
-                            Debug.WriteLine(numToAdd + " ADDED");
-                            EventManager.Instance.SendDataRecieved(new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
-                            return;
-                        }
-                    }
-                    if (SelectedDataFormat == DataFormat.UINT8)
-                    {
-                        if (buffer.Length == 1)
-                        {
-                            byte unsignedByte = buffer[0];
-                            int numToAdd = unsignedByte;
-                            Debug.WriteLine(numToAdd + " ADDED");
-                            EventManager.Instance.SendDataRecieved(new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
-                            return;
-                        }
-                    }
+                    //if (SelectedDataFormat == DataFormat.DOUBLE)
+                    //{
+                    //    if (buffer.Length == 8)
+                    //    {
+                    //        double decimalNumber = BitConverter.ToDouble(buffer, 0);
+                    //        double numToAdd = decimalNumber;
+                    //        Debug.WriteLine(numToAdd + " ADDED");
+                    //        EventManager.Instance.SendDataRecieved(0,new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
+                    //        return;
+                    //    }
+                    //}
+                    //if (SelectedDataFormat == DataFormat.INT8)
+                    //{
+                    //    if (buffer.Length == 1)
+                    //    {
+                    //        sbyte signedByte = (sbyte)buffer[0];
+                    //        int numToAdd = signedByte;
+                    //        Debug.WriteLine(numToAdd + " ADDED");
+                    //        EventManager.Instance.SendDataRecieved(0,new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
+                    //        return;
+                    //    }
+                    //}
+                    //if (SelectedDataFormat == DataFormat.UINT8)
+                    //{
+                    //    if (buffer.Length == 1)
+                    //    {
+                    //        byte unsignedByte = buffer[0];
+                    //        int numToAdd = unsignedByte;
+                    //        Debug.WriteLine(numToAdd + " ADDED");
+                    //        EventManager.Instance.SendDataRecieved(0, new ObservablePoint(_elapsedTime.TotalSeconds, numToAdd));
+                    //        return;
+                    //    }
+                    //}
 
 
                 }

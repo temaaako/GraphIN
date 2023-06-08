@@ -17,11 +17,11 @@ namespace GraphIN2.ViewModels
 
         public static EventManager Instance => _instance ??= new EventManager();
 
-        public event Action<ObservablePoint> DataRecieved;
+        public event Action<int, ObservablePoint> DataRecieved;
 
-        public void SendDataRecieved(ObservablePoint data)
+        public void SendDataRecieved(int index, ObservablePoint data)
         {
-            DataRecieved?.Invoke(data);
+            DataRecieved?.Invoke(index,data);
         }
     }
 }
