@@ -55,8 +55,8 @@ namespace GraphIN2.ViewModels
             }
         }
 
-
-        public bool IsFixed { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsFixed { get; set; } = true;
 
         public Axis[] XAxes { get; }
 
@@ -108,7 +108,7 @@ namespace GraphIN2.ViewModels
         public GraphVM()
         {
 
-            XAxisSize = "5";
+            XAxisSize = "10";
             SelectedZoomMode = "Both";
 
 
@@ -308,7 +308,10 @@ namespace GraphIN2.ViewModels
 
         private void OnDataRecieved(ObservablePoint data)
         {
-            AddItem(data);
+            if (IsActive)
+            {
+                AddItem(data);
+            }
         }
 
 

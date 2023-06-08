@@ -17,7 +17,7 @@ namespace GraphIN2.Other
             Fill = null;
             GeometrySize = 10;
             LineSmoothness = 0;
-
+            EasingFunction = null;
         }
 
         private bool _isSelected;

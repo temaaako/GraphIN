@@ -105,26 +105,26 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button Command="{Binding AddItemCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add</Button>
-            <Button  Command="{Binding AddSeriesCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add Series</Button>
-            <Button Command="{Binding RemoveSeriesCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Remove Series</Button>
-
+            
+            <!--<Button  Command="{Binding AddSeriesCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add Series</Button>
+            <Button Command="{Binding RemoveSeriesCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Remove Series</Button>-->
+            <CheckBox Margin="6" Height="20" TextBlock.FontSize="12" IsChecked="{Binding IsActive}" Style="{StaticResource FlatCheckBoxStyle}">Active</CheckBox>
+            <Button  Command="{Binding OpenSettingsCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Settings</Button>
+            <Button Command="{Binding SetFullCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Show All</Button>
+            <Button Command="{Binding SetLastCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Show last (sec):</Button>
+            <TextBox Margin="0" Text="{Binding XAxisSize}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="50"></TextBox>
+            <CheckBox Margin="6" Height="20" TextBlock.FontSize="12" IsChecked="{Binding IsFixed}" Style="{StaticResource FlatCheckBoxStyle}">Fixed</CheckBox>
             <Button Command="{Binding ClearCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Clear</Button>
+            <Button Command="{Binding AddItemCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Add</Button>
             <TextBlock  Style="{StaticResource FlatTextBlockStyle}">Zoom Mode:</TextBlock>
             <ComboBox Margin="0" x:Name="ZoomModeComboBox" ItemsSource="{Binding ZoomModeNames}" SelectedItem="{Binding SelectedZoomMode}" Height="22"/>
 
-            <Button Command="{Binding SetFullCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Show All</Button>
-            <Button Command="{Binding SetLastCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Show last:</Button>
-            <TextBox Margin="0" Text="{Binding XAxisSize}" PreviewTextInput="TextBox_PreviewTextInput" Height="20" Width="50"></TextBox>
-            <CheckBox Margin="6" Height="20" TextBlock.FontSize="12" IsChecked="{Binding IsFixed}" Style="{StaticResource FlatCheckBoxStyle}">Fixed</CheckBox>
-
-            <Button  Command="{Binding OpenSettingsCommand}" Style="{StaticResource FlatRoundedButtonStyle}">Settings</Button>
 
 
         </StackPanel>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2" >
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2" ScrollViewer.PanningMode="None">
             <lvc:CartesianChart 
-                
+                AnimationsSpeed="0"
             ZoomMode="{Binding ZoomMode}" 
             TooltipPosition="Top"
             TooltipTextSize="16"

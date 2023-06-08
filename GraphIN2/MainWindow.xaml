@@ -35,8 +35,8 @@
                 <MenuItem Header="_Exit"/>
             </MenuItem>
             <MenuItem Header="_Run">
-                <MenuItem Header="_Start" Command="{Binding RunCommand}"/>
-                <MenuItem Header="_Stop" Command="{Binding StopCommand}"/>
+                <MenuItem Header="_Start" Command="{Binding RunCommand}" IsEnabled="{Binding IsRunningReverse}"/>
+                <MenuItem Header="_Stop" Command="{Binding StopCommand}" IsEnabled="{Binding IsRunning}"/>
 
             </MenuItem>
             <TextBlock  >BaudRate:</TextBlock>
