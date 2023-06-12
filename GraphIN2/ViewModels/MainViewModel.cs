@@ -233,14 +233,11 @@ namespace GraphIN2.ViewModels
             {
                 try
                 {
-                    int signalCount = 2; // Number of signals you are expecting
-                    int bytesPerSignal = 1; // Assuming each signal is encoded as int8 (1 byte)
+                    int signalCount = SelectedParameterCount; 
+                    int bytesPerSignal = 1; 
                     byte[] buffer = new byte[signalCount * bytesPerSignal];
                     _serialPort.Read(buffer, 0, buffer.Length);
                     
-                    string binaryString = string.Join(" ", buffer.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
-                    Debug.WriteLine((sbyte)buffer[1]);
-
                     for (int i = 0; i < buffer.Length; i++)
                     {
                         EventManager.Instance.SendDataRecieved(i, new ObservablePoint(_elapsedTime.TotalSeconds, (sbyte)buffer[i]));

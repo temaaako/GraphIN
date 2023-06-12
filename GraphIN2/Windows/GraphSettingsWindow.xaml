@@ -15,7 +15,6 @@
         <local:SelectedItemsConverter x:Key="SelectedItemsConverter" />
     </Window.Resources>
 
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="289*"/>

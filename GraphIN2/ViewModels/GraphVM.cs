@@ -21,6 +21,8 @@ using GraphIN2.Other;
 using System.Windows.Media.Converters;
 using GraphIN2.Windows;
 using System.Windows;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace GraphIN2.ViewModels
 {
@@ -177,13 +179,38 @@ namespace GraphIN2.ViewModels
 
         private object collectionLock = new object();
 
+
+        private Timer timer;
+        //private object collectionLock = new object();
+        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            // Stop the timer after it elapsed and allow adding a new point
+            if (timer == null) return;
+            timer.Stop();
+            timer.Dispose();
+            timer = null;
+        }
+
         public void AddItem(int index, ObservablePoint itemToAdd)
         {
-            
-                //while (Series.Count <= index) 
-                //{
-                //    AddNewSeries(new DefaultSeries<ObservablePoint>());
-                //}
+
+            //while (Series.Count <= index) 
+            //{
+            //    AddNewSeries(new DefaultSeries<ObservablePoint>());
+            //}
+
+
+            if (timer == null || timer.Enabled == false)
+            {
+                timer = new Timer(1000); // 1000 milliseconds = 1 second
+                timer.Elapsed += TimerElapsed;
+                timer.Start();
+            }
+            else
+            {
+                // Ignore the new point if the timer is still running
+                return;
+            }
 
             Task.Run(() =>
             {
